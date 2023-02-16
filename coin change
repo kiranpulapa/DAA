@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+int coinChange(int* coins, int coinsSize, int amount) {
+    int* dp = (int*)malloc((amount + 1) * sizeof(int));
+    for (int i = 0; i <= amount; i++) {
+        dp[i] = INT_MAX - 1; // initialize to a large value
+    }
+    dp[0] = 0; // zero coins needed to make zero amount
+
+    for (int i = 0; i < coinsSize; i++) {
+        for (int j = coins[i]; j <= amount; j++) {
+            dp[j] = (dp[j] < dp[j - coins[i]] + 1) ? dp[j] : dp[j - coins[i]] + 1;
+        }
+    }
+    
+    int result = (dp[amount] == INT_MAX - 1) ? -1 : dp[amount];
+    free(dp);
+    return result;
+}
+
+int main() {
+    int coins[] = {1, 2, 5};
+    int coinsSize = 3;
+    int amount = 11;
+    int minCoins = coinChange(coins, coinsSize, amount);
+    printf("The minimum number of coins to make up %d is %d\n", amount, minCoins);
+    return 0;
+}
