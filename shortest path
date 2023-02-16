@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX_NODES 100
+
+// Structure to represent a node in the graph
+typedef struct Node {
+    int dest;
+    int weight;
+    struct Node* next;
+} Node;
+
+// Structure to represent the graph
+typedef struct Graph {
+    int numNodes;
+    Node* adjList[MAX_NODES];
+} Graph;
+
+// Function to create a new node in the graph
+Node* createNode(int dest, int weight) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->dest = dest;
+    newNode->weight = weight;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create a new graph with n nodes
+Graph* createGraph(int n) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->numNodes = n;
+    for (int i = 0; i < n; i++) {
+        graph->adjList[i] = NULL;
+    }
+    return graph;
+}
+
+// Function to add an edge to the graph
+void addEdge(Graph* graph, int src, int dest, int weight) {
+    Node* newNode = createNode(dest, weight);
+    newNode->next = graph->adjList[src];
+    graph->adjList[src] = newNode;
+}
+
+// Function to find the node with the smallest distance
+int minDistance(int* dist, int* visited, int n) {
+    int minDist = INT_MAX;
+    int minIndex = -1;
+    for (int i = 0; i < n; i++) {
+        if (!visited[i] && dist[i] <= minDist) {
+            minDist = dist[i];
+            minIndex = i;
+        }
+    }
+    return minIndex;
+}
+
+// Function to find the shortest path in the graph
+int dijkstra(Graph* graph, int src, int dest) {
+    int dist[MAX_NODES];
+    int visited[MAX_NODES];
+    for (int i = 0; i < graph->numNodes; i++) {
+        dist[i] = INT_MAX;
+        visited[i] = 0;
+    }
+    dist[src] = 0;
+    for (int i = 0; i < graph->numNodes - 1; i++) {
+        int u = minDistance(dist, visited, graph->numNodes);
+        visited[u] = 1;
+        for (Node* v = graph->adjList[u]; v != NULL; v = v->next) {
+            int alt = dist[u] + v->weight;
+            if (alt < dist[v->dest]) {
+                dist[v->dest] = alt;
+            }
+        }
+    }
+    return dist[dest] == INT_MAX ? -1 : dist[dest];
+}
+
+// Driver program to test the implementation
+int main() {
+    int n, m;
+    scanf("%d%d", &n, &m);
+    Graph* graph = createGraph(n);
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        scanf("%d%d%d", &u, &v, &w);
+        addEdge(graph, u - 1, v - 1, w);
+    }
+    int k;
+    scanf("%d", &k);
+    int result = dijkstra(graph, k - 1, -1);
+    printf("%d\n", result);
+    return 0;
+}
