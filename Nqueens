@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+void printBoard(char **board, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            printf("%c ", board[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+bool isValid(char **board, int row, int col, int n) {
+    for (int i = 0; i < n; i++) {
+        if (board[i][col] == 'Q') {
+            return false;
+        }
+        if (row - i >= 0 && col - i >= 0 && board[row - i][col - i] == 'Q') {
+            return false;
+        }
+        if (row + i < n && col - i >= 0 && board[row + i][col - i] == 'Q') {
+            return false;
+        }
+    }
+    return true;
+}
+
+void backtrack(char **board, int col, int n, int *count) {
+    if (col == n) {
+        printf("Solution %d:\n", (*count)++);
+        printBoard(board, n);
+        return;
+    }
+    for (int row = 0; row < n; row++) {
+        if (isValid(board, row, col, n)) {
+            board[row][col] = 'Q';
+            backtrack(board, col + 1, n, count);
+            board[row][col] = '.';
+        }
+    }
+}
+
+void solveNQueens(int n) {
+    char **board = (char **) malloc(n * sizeof(char *));
+    for (int i = 0; i < n; i++) {
+        board[i] = (char *) malloc(n * sizeof(char));
+        for (int j = 0; j < n; j++) {
+            board[i][j] = '.';
+        }
+    }
+    int count = 1;
+    backtrack(board, 0, n, &count);
+    for (int i = 0; i < n; i++) {
+        free(board[i]);
+    }
+    free(board);
+}
+
+int main() {
+    int n;
+    printf("Enter the number of queens: ");
+    scanf("%d", &n);
+    solveNQueens(n);
+    return 0;
+}
