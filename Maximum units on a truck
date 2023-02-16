@@ -1,0 +1,42 @@
+#include <stdio.h>
+
+int maximumUnits(int boxTypes[][2], int n, int truckSize) {
+    // Sort the box types in decreasing order of units per box
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (boxTypes[i][1] < boxTypes[j][1]) {
+                int tmp1 = boxTypes[i][0];
+                int tmp2 = boxTypes[i][1];
+                boxTypes[i][0] = boxTypes[j][0];
+                boxTypes[i][1] = boxTypes[j][1];
+                boxTypes[j][0] = tmp1;
+                boxTypes[j][1] = tmp2;
+            }
+        }
+    }
+
+    // Load boxes onto the truck until it is full
+    int units = 0, i = 0;
+    while (truckSize > 0 && i < n) {
+        int boxes = boxTypes[i][0];
+        int unitsPerBox = boxTypes[i][1];
+        int loadedBoxes = (boxes < truckSize) ? boxes : truckSize;
+        units += loadedBoxes * unitsPerBox;
+        truckSize -= loadedBoxes;
+        i++;
+    }
+
+    return units;
+}
+
+int main() {
+    int boxTypes[][2] = {{3, 4}, {1, 3}, {2, 2}, {4, 1}};
+    int n = sizeof(boxTypes) / sizeof(boxTypes[0]);
+    int truckSize = 6;
+
+    int maxUnits = maximumUnits(boxTypes, n, truckSize);
+
+    printf("Maximum units that can be loaded: %d\n", maxUnits);
+
+    return 0;
+}
