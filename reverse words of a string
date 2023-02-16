@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <string.h>
+
+void reverseString(char *begin, char *end) {
+    char temp;
+    while (begin < end) {
+        temp = *begin;
+        *begin++ = *end;
+        *end-- = temp;
+    }
+}
+
+char *reverseWords(char *s) {
+    char *word_begin = NULL;
+    char *temp = s;
+
+    while (*temp) {
+        if (word_begin == NULL && *temp != ' ') {
+            word_begin = temp;
+        }
+        if (word_begin && (*(temp + 1) == ' ' || *(temp + 1) == '\0')) {
+            reverseString(word_begin, temp);
+            word_begin = NULL;
+        }
+        temp++;
+    }
+
+    reverseString(s, temp - 1);
+
+    int i, j = 0;
+
+    for (i = 0; s[i]; i++) {
+        if (s[i] != ' ' || (i > 0 && s[i - 1] != ' ')) {
+            s[j++] = s[i];
+        }
+    }
+    s[j] = '\0';
+
+    return s;
+}
+
+int main() {
+    char s[] = "the sky is blue";
+    printf("%s\n", reverseWords(s));
+    return 0;
+}
