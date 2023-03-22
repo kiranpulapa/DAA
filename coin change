@@ -1,30 +1,25 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-
-int coinChange(int* coins, int coinsSize, int amount) {
-    int* dp = (int*)malloc((amount + 1) * sizeof(int));
+#include<math.h>
+int coinChange(int* coins, int n, int amount) {
+    int dp[amount + 1];
     for (int i = 0; i <= amount; i++) {
-        dp[i] = INT_MAX - 1; // initialize to a large value
+        dp[i] = amount + 1;
     }
-    dp[0] = 0; // zero coins needed to make zero amount
-
-    for (int i = 0; i < coinsSize; i++) {
-        for (int j = coins[i]; j <= amount; j++) {
-            dp[j] = (dp[j] < dp[j - coins[i]] + 1) ? dp[j] : dp[j - coins[i]] + 1;
+    dp[0] = 0;
+    for (int i = 1; i <= amount; i++) {
+        for (int j = 0; j < n; j++) {
+            if (coins[j] <= i && dp[i - coins[j]] != amount + 1) {
+                dp[i] = fmin(dp[i], dp[i - coins[j]] + 1);
+            }
         }
     }
-    
-    int result = (dp[amount] == INT_MAX - 1) ? -1 : dp[amount];
-    free(dp);
-    return result;
+    return dp[amount] == amount + 1 ? -1 : dp[amount];
 }
 
 int main() {
-    int coins[] = {1, 2, 5};
-    int coinsSize = 3;
-    int amount = 11;
-    int minCoins = coinChange(coins, coinsSize, amount);
-    printf("The minimum number of coins to make up %d is %d\n", amount, minCoins);
+    int coins[] = {1, 5, 10, 25};
+    int n = sizeof(coins) / sizeof(coins[0]);
+    int amount = 31;
+    printf("Fewest number of coins needed to make up the amount %d: %d", amount, coinChange(coins, n, amount));
     return 0;
 }
